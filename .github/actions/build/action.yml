@@ -1,0 +1,22 @@
+name: ビルドして HTML 形式で出力する
+
+runs:
+  using: composite
+
+  steps:
+    - name: Python の準備
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.x"
+
+    - name: Sphinx のインストール
+      run: pip install sphinx==5.0.2
+      shell: bash
+
+    - name: sphinxcontrib-trimblank 拡張のインストール
+      run: pip install sphinxcontrib-trimblank==1.0.3
+      shell: bash
+
+    - name: ビルドして HTML を出力
+      run: sphinx-build -M html source build
+      shell: bash
