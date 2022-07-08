@@ -1,0 +1,22 @@
+name: ビルドして HTML 形式で出力し、GitHub Pages で公開する
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v3
+
+      - name: ビルド
+        uses: ./.github/actions/build
+
+      - name: GitHub Pages で公開
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: ./build/html

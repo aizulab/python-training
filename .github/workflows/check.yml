@@ -1,0 +1,17 @@
+name: 正しくビルドできるかどうか確認する
+
+on:
+  push:
+    branches-ignore:
+      - main
+      - gh-pages
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: リポジトリをチェックアウト
+        uses: actions/checkout@v3
+
+      - name: ビルド
+        uses: ./.github/actions/build
