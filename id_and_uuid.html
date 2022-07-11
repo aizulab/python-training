@@ -1,0 +1,189 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>ID と UUID &#8212; Python 研修  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="日時の扱い" href="datetime.html" />
+    <link rel="prev" title="クラスとオブジェクト" href="class_and_object.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="id-uuid">
+<h1>ID と UUID<a class="headerlink" href="#id-uuid" title="Permalink to this heading">¶</a></h1>
+<section id="id">
+<h2>ID（識別子）<a class="headerlink" href="#id" title="Permalink to this heading">¶</a></h2>
+<p>たとえば、ある SNS において名前が全く等しい２人のユーザーがいたとする。これらのユーザーは「同じ」だろうか？</p>
+<p>これらのユーザーを登録したのは同姓同名の別人かもしれないし、あえて他人の名前を騙っているのかもしれない。</p>
+<p>通常システム上でユーザーを管理する場合、一人一人のユーザーを区別するために何らかの <em>ID (識別子, Identifier)</em> を付与する。</p>
+<p>ユーザーに限らず、商品や席の予約、注文など、一つ一つを区別したいものは ID によって管理することができる。</p>
+<p>ID はそれぞれ区別できる、つまり比較可能でユニーク（一意）である必要がある。例えば、連番（シリアル番号）や、重複しないランダムな文字列などは、比較可能でユニークであるため ID として使用できる。</p>
+</section>
+<section id="id1">
+<h2>データベースを用いた連番生成（採番）<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<p>連番を生成するのは意外と難しい。</p>
+<p>例えば、新規ユーザーを作成するタイミングでユーザーに連番 ID を振るとする。この場合、例えば今までのユーザーのうち最も ID が大きいユーザーの ID に
+1 を足して新しい ID とすればよさそうだ。</p>
+<p>しかし、全く同じタイミングで新規ユーザーが作成された場合はどうなるだろうか。一定規模以上のシステムでは、処理が同時に走る可能性も当然想定しておかなければならない。</p>
+<p>データベースの中には採番機能を持つものがあり（MySQL など）、新しいデータが挿入されると重複しないように番号を振ってくれる。</p>
+<p>また、採番機能がなかったとしても、データベースが１度に１人しかアクセスできないようにするようなロック機構を持っていれば、重複しないように連番を生成することができるだろう。</p>
+<p>この手法の欠点としては、データベースがないと採番しにくいこと、１度に１人ずつしか番号を振れないので採番に時間がかかる可能性があること、連番のため他のユーザーの ID が簡単にわかってしまうなどが挙げられる。</p>
+</section>
+<section id="uuid">
+<h2>UUID<a class="headerlink" href="#uuid" title="Permalink to this heading">¶</a></h2>
+<p><em>UUID (Universally Unique IDentifier)</em> は <a class="reference external" href="https://datatracker.ietf.org/doc/html/rfc4122">RFC4122</a> で定義されているユニークな ID である。
+<em>GUID (Globally Unique IDentifier)</em> と呼ばれることもある。</p>
+<p>UUID は 16 進数で 32 桁（128 ビット）の値で、通常以下のようにハイフン区切りで表される。</p>
+<div class="highlight-text notranslate"><div class="highlight"><pre><span></span>1962a045-2ad8-44d0-94f1-d59dedc22c57
+</pre></div>
+</div>
+<p>UUID は、衝突（重複）しないように生成することができるように設計されている。</p>
+<p>UUID にはいくつかのバージョン（バージョン１〜５）があり、バージョンによって時刻を用いたり、乱数を用いたりして生成される。</p>
+<div class="admonition warning">
+<p class="admonition-title">警告</p>
+<p>もちろん、コンピュータ上で<em>完全にランダム</em>な数値を作成することは（外部の物理現象を観測するなどしない限り）できない。そのため完全にランダムではない<em>疑似乱数</em>を用いることも多いが、疑似乱数の生成方法によっては常に同じような乱数が生成されてしまったり、次に生成される乱数が簡単に予測できてしまうことがある。</p>
+<p>UUID のバージョン４は実際に乱数により生成されるが、正しい方法で生成すれば衝突する確率が極めて低くなるように設計されている。</p>
+<p>逆に言えば、生成方法に誤りがある場合、衝突しやすい ID が生成されてしまう可能性もあるということである。</p>
+</div>
+<p>UUID の欠点としては、バージョン４などでは生成した ID から生成した順番が判別できないことや、データベースによってはキーを UUID にすることでパフォーマンスが落ちる可能性があることなどが挙げられる。</p>
+</section>
+<section id="python-uuid">
+<h2>Python で UUID を生成する<a class="headerlink" href="#python-uuid" title="Permalink to this heading">¶</a></h2>
+<p>Python の場合、<a class="reference external" href="https://docs.python.org/ja/3/library/uuid.html">uuid 標準モジュール</a>で UUID を生成することができる。</p>
+<p>ここではバージョン４の UUID を生成してみよう。バージョン４の UUID は乱数によって生成されるランダムな UUID であり、ID としてよく用いられる。</p>
+<p><code class="docutils literal notranslate"><span class="pre">uuid4()</span></code> 関数を使用することでランダムなバージョン４の UUID を生成できる。
+REPL で実行してみよう。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">uuid</span> <span class="kn">import</span> <span class="n">uuid4</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">uuid4</span><span class="p">()</span>
+<span class="go">UUID(&#39;c92b2a2d-9c4a-42e9-8d6a-a2b6901dc66f&#39;)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">uuid4</span><span class="p">()</span>
+<span class="go">UUID(&#39;cddf7c60-18bd-47f2-9309-c0ff65b5bff8&#39;)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">uuid4()</span></code> 関数を実行するたびに異なる UUID が生成されるはずだ。</p>
+<p>UUID は <code class="docutils literal notranslate"><span class="pre">UUID</span></code> というクラスのインスタンスとして生成されるが、
+<code class="docutils literal notranslate"><span class="pre">str()</span></code> 組み込み関数を利用することで単なる文字列に変換できる。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">str</span><span class="p">(</span><span class="n">uuid4</span><span class="p">())</span>
+<span class="go">&#39;2711d886-bc78-4175-ab88-71c0ab3a996d&#39;</span>
+</pre></div>
+</div>
+</section>
+<section id="id3">
+<h2>練習問題<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">User</span></code> クラスに <code class="docutils literal notranslate"><span class="pre">user_id</span></code> 属性（文字列）を追加せよ。
+<code class="docutils literal notranslate"><span class="pre">user_id</span></code> 属性は、コンストラクタ内で UUID バージョン４の値（を文字列にしたもの）で初期化せよ。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">User</span></code> クラスのインスタンスを作成するたびに、異なる <code class="docutils literal notranslate"><span class="pre">user_id</span></code> 属性が設定されることを確認せよ。</p></li>
+<li><p>データベースの自動採番機能（例えば MySQL の AUTO_INCREMENT）等を用いて ID を生成する場合、新しいデータをデータベースに保存するときに初めて ID が振られるため、コンストラクタで ID を初期化するといったことができない。このような場合どうすればよいか考えよ。</p></li>
+</ol>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Python 研修</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basics.html">基本文法</a></li>
+<li class="toctree-l1"><a class="reference internal" href="class_and_object.html">クラスとオブジェクト</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ID と UUID</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id">ID（識別子）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">データベースを用いた連番生成（採番）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#uuid">UUID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#python-uuid">Python で UUID を生成する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">練習問題</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="datetime.html">日時の扱い</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html">プロトコル</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependency_injection.html">Dependency Injection</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="class_and_object.html" title="前の章へ">クラスとオブジェクト</a></li>
+      <li>Next: <a href="datetime.html" title="次の章へ">日時の扱い</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/id_and_uuid.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

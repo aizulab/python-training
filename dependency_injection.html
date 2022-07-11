@@ -1,0 +1,630 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Dependency Injection &#8212; Python 研修  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="prev" title="プロトコル" href="protocol.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="dependency-injection">
+<h1>Dependency Injection<a class="headerlink" href="#dependency-injection" title="Permalink to this heading">¶</a></h1>
+<section id="id1">
+<h2>不安定なテスト<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h2>
+<p>以下のスクリプトは、生年月日から年齢を計算するものである。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+
+
+<span class="k">def</span> <span class="nf">calc_age</span><span class="p">(</span><span class="n">date_of_birth</span><span class="p">:</span> <span class="n">date</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;生年月日から年齢を計算します。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        date_of_birth: 生年月日。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        年齢。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">today</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+    <span class="n">deltayear</span> <span class="o">=</span> <span class="n">today</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="n">date_of_birth</span><span class="o">.</span><span class="n">year</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">today</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">today</span><span class="o">.</span><span class="n">day</span><span class="p">)</span> <span class="o">&lt;=</span> <span class="p">(</span><span class="n">date_of_birth</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">date_of_birth</span><span class="o">.</span><span class="n">day</span><span class="p">):</span>
+        <span class="n">deltayear</span> <span class="o">-=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">deltayear</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>  <span class="c1"># スクリプトとして実行されたときのみ、以下を実行</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+
+    <span class="c1"># スクリプトの第一引数を date に変換して calc_age を呼ぶ</span>
+    <span class="n">age</span> <span class="o">=</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">age</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>たとえば上記のスクリプトを <code class="docutils literal notranslate"><span class="pre">calc_age.py</span></code> として保存して、以下のように実行できる。</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>$ python3 calc_age.py <span class="m">1994</span>-03-30  <span class="c1"># 私の誕生日</span>
+<span class="m">28</span>
+</pre></div>
+</div>
+<p>実は、このなかの <code class="docutils literal notranslate"><span class="pre">calc_age()</span></code> 関数にはバグがある。テストをしっかり書いておけば、ユーザーからクレームが来る前にバグに気づくことができただろう。</p>
+<p>今からでも遅くない。 <code class="docutils literal notranslate"><span class="pre">calc_age()</span></code> 関数のテストを書いてみよう。</p>
+<p>テストを書くときのコツは、エッジケース、つまり境界値を意識することだ。今日が 2022 年 7 月 6 日だとすると、</p>
+<ul class="simple">
+<li><p>2000 年 7 月 5 日生まれの場合 → 22 歳</p></li>
+<li><p>2000 年 7 月 6 日生まれの場合 → 22 歳（今日が誕生日！）</p></li>
+<li><p>2000 年 7 月 7 日生まれの場合 → 21 歳</p></li>
+</ul>
+<p>となるはずだ。</p>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p><em>満年齢</em>は厳密には誕生日前日の午後 12 時（24 時）に加算される。そのため、7 月 7 日生まれの人は 7 月 6 日の午後 12 時に満年齢で 22 歳となる。つまり、7 月 6 日の時点で満 22 歳となってしまうわけだが、今回はこれを無視し、日本での通常の感覚における年齢計算（誕生日に年齢が加算される）とする。</p>
+</div>
+<p>テストは以下のようになった（ここでは別ファイルにテストを書いている）。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+
+<span class="kn">from</span> <span class="nn">calc_age</span> <span class="kn">import</span> <span class="n">calc_age</span>
+
+
+<span class="k">def</span> <span class="nf">test_calc_age</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;calc_age() 関数のテスト。&quot;&quot;&quot;</span>
+
+    <span class="k">assert</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span> <span class="o">==</span> <span class="mi">22</span>
+    <span class="k">assert</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span> <span class="o">==</span> <span class="mi">22</span>
+    <span class="k">assert</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span> <span class="o">==</span> <span class="mi">21</span>
+</pre></div>
+</div>
+<p>2022 年 7 月 6 日時点でのテスト結果は以下の通り。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">test_calc_age</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;calc_age() 関数のテスト。&quot;&quot;&quot;</span>
+
+        <span class="k">assert</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span> <span class="o">==</span> <span class="mi">22</span>
+<span class="o">&gt;</span>       <span class="k">assert</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span> <span class="o">==</span> <span class="mi">22</span>
+<span class="n">E</span>       <span class="k">assert</span> <span class="mi">21</span> <span class="o">==</span> <span class="mi">22</span>
+<span class="n">E</span>        <span class="o">+</span>  <span class="n">where</span> <span class="mi">21</span> <span class="o">=</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span>
+<span class="n">E</span>        <span class="o">+</span>    <span class="n">where</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span> <span class="o">=</span> <span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+
+<span class="n">test_calc_age</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">10</span><span class="p">:</span> <span class="ne">AssertionError</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">calc_age(date(2000,</span> <span class="pre">7,</span> <span class="pre">6))</span></code> の結果が <code class="docutils literal notranslate"><span class="pre">22</span></code> ではなくて <code class="docutils literal notranslate"><span class="pre">21</span></code> になっている。やはり境界にバグが潜んでいたようだ。となると、比較演算子 <code class="docutils literal notranslate"><span class="pre">&lt;=</span></code> のあたりが怪しい。修正してみよう。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">calc_age</span><span class="p">(</span><span class="n">date_of_birth</span><span class="p">:</span> <span class="n">date</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;略&quot;&quot;&quot;</span>
+    <span class="n">today</span> <span class="o">=</span> <span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>
+    <span class="n">deltayear</span> <span class="o">=</span> <span class="n">today</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="n">date_of_birth</span><span class="o">.</span><span class="n">year</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">today</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">today</span><span class="o">.</span><span class="n">day</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">date_of_birth</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">date_of_birth</span><span class="o">.</span><span class="n">day</span><span class="p">):</span>
+        <span class="n">deltayear</span> <span class="o">-=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">deltayear</span>
+</pre></div>
+</div>
+<p>テストが通ることを確認してみる。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="p">(</span><span class="n">前略</span><span class="p">)</span>
+
+<span class="n">test_calc_age</span><span class="o">.</span><span class="n">py</span> <span class="o">.</span>                                  <span class="p">[</span><span class="mi">100</span><span class="o">%</span><span class="p">]</span>
+
+<span class="o">====================</span> <span class="mi">1</span> <span class="n">passed</span> <span class="ow">in</span> <span class="mf">0.01</span><span class="n">s</span> <span class="o">====================</span>
+</pre></div>
+</div>
+<p>一件落着だ。コードをチェックインして家に帰ろう。</p>
+<p>しかし明日、出勤して誰かがテストを走らせてみると……どうなるかはおわかりだろう。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span>    <span class="k">def</span> <span class="nf">test_calc_age</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;calc_age() 関数のテスト。&quot;&quot;&quot;</span>
+
+        <span class="k">assert</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span> <span class="o">==</span> <span class="mi">22</span>
+        <span class="k">assert</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span> <span class="o">==</span> <span class="mi">22</span>
+<span class="o">&gt;</span>       <span class="k">assert</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span> <span class="o">==</span> <span class="mi">21</span>
+<span class="n">E</span>       <span class="k">assert</span> <span class="mi">22</span> <span class="o">==</span> <span class="mi">21</span>
+<span class="n">E</span>        <span class="o">+</span>  <span class="n">where</span> <span class="mi">22</span> <span class="o">=</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span>
+<span class="n">E</span>        <span class="o">+</span>    <span class="n">where</span> <span class="n">datetime</span><span class="o">.</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span> <span class="o">=</span> <span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">)</span>
+
+<span class="n">test_calc_age</span><span class="o">.</span><span class="n">py</span><span class="p">:</span><span class="mi">11</span><span class="p">:</span> <span class="ne">AssertionError</span>
+</pre></div>
+</div>
+<p><em>不安定なテスト (flaky test)</em> ……
+つまり、その時の状況や運によって成功したりしなかったりするテストは<strong>危険</strong>だ。</p>
+<p>なにか重大なバグが潜んでいるかもしれないにも関わらず、運良くテストが通った日には見過ごされてしまう。</p>
+<p>あるいは、テストを実行するたびにイライラさせられ、ついにはコメントアウトされてしまう。</p>
+<p>不安定なテストの原因は様々だが、主にテストが何か不安定なものに<em>依存</em>しているときに発生する。</p>
+<ul class="simple">
+<li><p>テストが他のテストに依存している：例えば、他のテストで生成・削除されたデータを使用している</p></li>
+<li><p>テストが現在日時に依存している</p></li>
+<li><p>テストが乱数に依存している</p></li>
+<li><p>テストが外部サービスやネットワークに依存している</p></li>
+</ul>
+<p>今回の場合は、テストが現在日時に依存していることが問題だ。</p>
+</section>
+<section id="id2">
+<h2>テストしやすいコード<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<p>前述の <code class="docutils literal notranslate"><span class="pre">calc_age()</span></code> 関数は、現在日時に依存しているため本質的にテストしにくい関数だった。</p>
+<p>テストしやすくするためには、
+<code class="docutils literal notranslate"><span class="pre">calc_age()</span></code> 関数がそもそも現在日時に依存していなければよい。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+
+
+<span class="k">def</span> <span class="nf">calc_age_at</span><span class="p">(</span><span class="n">d</span><span class="p">:</span> <span class="n">date</span><span class="p">,</span> <span class="n">date_of_birth</span><span class="p">:</span> <span class="n">date</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;生年月日から、ある日付時点での年齢を計算します。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        d: この日付時点での年齢を計算します。</span>
+<span class="sd">        date_of_birth: 生年月日。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        年齢。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">deltayear</span> <span class="o">=</span> <span class="n">d</span><span class="o">.</span><span class="n">year</span> <span class="o">-</span> <span class="n">date_of_birth</span><span class="o">.</span><span class="n">year</span>
+
+    <span class="k">if</span> <span class="p">(</span><span class="n">d</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">d</span><span class="o">.</span><span class="n">day</span><span class="p">)</span> <span class="o">&lt;</span> <span class="p">(</span><span class="n">date_of_birth</span><span class="o">.</span><span class="n">month</span><span class="p">,</span> <span class="n">date_of_birth</span><span class="o">.</span><span class="n">day</span><span class="p">):</span>
+        <span class="n">deltayear</span> <span class="o">-=</span> <span class="mi">1</span>
+
+    <span class="k">return</span> <span class="n">deltayear</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="kn">import</span> <span class="nn">sys</span>
+
+    <span class="n">age</span> <span class="o">=</span> <span class="n">calc_age_at</span><span class="p">(</span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">(),</span> <span class="n">date</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="n">sys</span><span class="o">.</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]))</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">age</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>新しい <code class="docutils literal notranslate"><span class="pre">calc_age_at()</span></code> 関数は、内部で <code class="docutils literal notranslate"><span class="pre">date.today()</span></code> を使用していない。代わりに、呼び出し時に第１引数に <code class="docutils literal notranslate"><span class="pre">date.today()</span></code> を渡している。</p>
+<p><code class="docutils literal notranslate"><span class="pre">calc_age_at()</span></code> 関数は現在日時に依存していないので、テストしやすい。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+
+<span class="kn">from</span> <span class="nn">calc_age</span> <span class="kn">import</span> <span class="n">calc_age_at</span>
+
+
+<span class="k">def</span> <span class="nf">test_calc_age_at</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;calc_age_at() 関数のテスト。&quot;&quot;&quot;</span>
+
+    <span class="n">today</span> <span class="o">=</span> <span class="n">date</span><span class="p">(</span><span class="mi">2022</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">calc_age_at</span><span class="p">(</span><span class="n">today</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span> <span class="o">==</span> <span class="mi">22</span>
+    <span class="k">assert</span> <span class="n">calc_age_at</span><span class="p">(</span><span class="n">today</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span> <span class="o">==</span> <span class="mi">22</span>
+    <span class="k">assert</span> <span class="n">calc_age_at</span><span class="p">(</span><span class="n">today</span><span class="p">,</span> <span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span> <span class="o">==</span> <span class="mi">21</span>
+</pre></div>
+</div>
+<p>また、副作用として <code class="docutils literal notranslate"><span class="pre">calc_age_at()</span></code> 関数では「特定の日時における年齢」も計算できるようにもなっている。</p>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>日時のテストに便利な <a class="reference external" href="https://github.com/spulec/freezegun">FreezeGun</a> というサードパーティライブラリを用いると、もとの <code class="docutils literal notranslate"><span class="pre">calc_age()</span></code> 関数のままでも壊れないテストを書くことができる。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+
+<span class="kn">from</span> <span class="nn">freezegun</span> <span class="kn">import</span> <span class="n">freeze_time</span>
+
+<span class="kn">from</span> <span class="nn">calc_age</span> <span class="kn">import</span> <span class="n">calc_age</span>
+
+
+<span class="nd">@freeze_time</span><span class="p">(</span><span class="s2">&quot;2022-07-06&quot;</span><span class="p">)</span>  <span class="c1"># 日付を 2022/07/06 に固定</span>
+<span class="k">def</span> <span class="nf">test_calc_age</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;calc_age() 関数のテスト。&quot;&quot;&quot;</span>
+
+    <span class="k">assert</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span> <span class="o">==</span> <span class="mi">22</span>
+    <span class="k">assert</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span> <span class="o">==</span> <span class="mi">22</span>
+    <span class="k">assert</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span> <span class="o">==</span> <span class="mi">21</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>より一般に、 <a class="reference external" href="https://docs.python.org/ja/3/library/unittest.mock.html">unittest.mock 標準モジュール</a>の <code class="docutils literal notranslate"><span class="pre">patch()</span></code> デコレータや、
+pytest の <code class="docutils literal notranslate"><span class="pre">monkeypatch</span></code> フィクスチャなどを用いてプログラムの一部分をテスト中のみ書き換えてテストすることもできる（<em>モンキーパッチ</em>）。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+<span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">MagicMock</span><span class="p">,</span> <span class="n">patch</span>
+
+<span class="kn">from</span> <span class="nn">calc_age</span> <span class="kn">import</span> <span class="n">calc_age</span>
+
+
+<span class="c1"># calc_age.py 内の date をモック（偽物）に変更</span>
+<span class="nd">@patch</span><span class="p">(</span><span class="s2">&quot;calc_age.date&quot;</span><span class="p">)</span>
+<span class="k">def</span> <span class="nf">test_calc_age</span><span class="p">(</span><span class="n">mock_date</span><span class="p">:</span> <span class="n">MagicMock</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;calc_age() 関数のテスト。&quot;&quot;&quot;</span>
+
+    <span class="c1"># モックになった calc_age.py 内の date の today() メソッドを</span>
+    <span class="c1"># 常に date(2022, 7, 6) を返すように設定</span>
+    <span class="n">mock_date</span><span class="o">.</span><span class="n">today</span> <span class="o">=</span> <span class="k">lambda</span><span class="p">:</span> <span class="n">date</span><span class="p">(</span><span class="mi">2022</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">5</span><span class="p">))</span> <span class="o">==</span> <span class="mi">22</span>
+    <span class="k">assert</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">6</span><span class="p">))</span> <span class="o">==</span> <span class="mi">22</span>
+    <span class="k">assert</span> <span class="n">calc_age</span><span class="p">(</span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">))</span> <span class="o">==</span> <span class="mi">21</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="id3">
+<h2>Dependency Injection<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
+<p>不安定なものに依存したコードはテストしにくい。しかし、通常コードというのは不安定なもの（乱数、日時、外部サービス、etc.）に依存するものである。</p>
+<p>そこで、先程は依存する不安定なものを関数の外部から引数で渡すことで、関数をテストしやすい状態にした。これは <em>Dependency Injection（DI；依存性の注入）</em>と呼ばれる。</p>
+<p>クラスの場合は、コンストラクタ経由で依存性を注入することもできる。</p>
+<p>次の <code class="docutils literal notranslate"><span class="pre">Dice</span></code> クラスはサイコロを表すクラスであるが、内部で乱数を使用している。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">Random</span>
+
+
+<span class="k">class</span> <span class="nc">Dice</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;サイコロを表すクラス。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        number_of_sides: 面の数。デフォルトは６です。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">number_of_sides</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_sides</span> <span class="o">=</span> <span class="n">number_of_sides</span>
+
+    <span class="k">def</span> <span class="nf">max_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;サイコロを n 回振って、そのうちの最大の出目を返します。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n: サイコロを振る回数。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            最大の出目。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">random</span> <span class="o">=</span> <span class="n">Random</span><span class="p">()</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_sides</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">dice</span> <span class="o">=</span> <span class="n">Dice</span><span class="p">(</span><span class="mi">100</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">max_in</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+</pre></div>
+</div>
+<p><a class="reference external" href="https://docs.python.org/ja/3/library/random.html">random 標準モジュール</a>で提供されている <code class="docutils literal notranslate"><span class="pre">Random</span></code> クラスの
+<code class="docutils literal notranslate"><span class="pre">randint(a,</span> <span class="pre">b)</span></code> メソッドは、 <code class="docutils literal notranslate"><span class="pre">a</span> <span class="pre">&lt;=</span> <span class="pre">N</span> <span class="pre">&lt;=</span> <span class="pre">b</span></code> であるようなランダムな整数 <code class="docutils literal notranslate"><span class="pre">N</span></code> を返す。</p>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p><code class="docutils literal notranslate"><span class="pre">randint(a,</span> <span class="pre">b)</span></code> は <a class="reference external" href="https://docs.python.org/ja/3/library/random.html">random 標準モジュール</a>の関数としても提供されている。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">randint</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">randint</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+<span class="go">65</span>
+</pre></div>
+</div>
+</div>
+<p>このクラスをテストしやすいように変更してみよう。即ち、依存している <code class="docutils literal notranslate"><span class="pre">Random</span></code> クラスのインスタンスを外部から注入する。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">random</span> <span class="kn">import</span> <span class="n">Random</span>
+
+
+<span class="k">class</span> <span class="nc">Dice</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;サイコロを表すクラス。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        random: 乱数を生成するために用いる、Random クラスのインスタンス。</span>
+<span class="sd">        number_of_sides: 面の数。デフォルトは６です。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">random</span><span class="p">:</span> <span class="n">Random</span><span class="p">,</span> <span class="n">number_of_sides</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">6</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">random</span> <span class="o">=</span> <span class="n">random</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">number_of_sides</span> <span class="o">=</span> <span class="n">number_of_sides</span>
+
+    <span class="k">def</span> <span class="nf">max_in</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;サイコロを n 回振って、そのうちの最大の出目を返します。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            n: サイコロを振る回数。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            最大の出目。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="nb">max</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">number_of_sides</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">)</span>
+        <span class="p">)</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">dice</span> <span class="o">=</span> <span class="n">Dice</span><span class="p">(</span><span class="n">Random</span><span class="p">(),</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">dice</span><span class="o">.</span><span class="n">max_in</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span>
+</pre></div>
+</div>
+<p>すると、テストは以下のように書ける。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Any</span>
+
+<span class="kn">from</span> <span class="nn">dice</span> <span class="kn">import</span> <span class="n">Dice</span>
+
+
+<span class="k">def</span> <span class="nf">test_max_in</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;max_in() メソッドのテスト。&quot;&quot;&quot;</span>
+
+    <span class="k">class</span> <span class="nc">MockRandom</span><span class="p">:</span>  <span class="c1"># 関数内でもクラスは定義できる</span>
+        <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">randints</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">([</span><span class="mi">83</span><span class="p">,</span> <span class="mi">98</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">81</span><span class="p">,</span> <span class="mi">28</span><span class="p">])</span>
+
+        <span class="k">def</span> <span class="nf">randint</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">a</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">b</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
+            <span class="c1"># randint(1, 100) として呼ばれていることをテスト</span>
+            <span class="k">assert</span> <span class="n">a</span> <span class="o">==</span> <span class="mi">1</span>
+            <span class="k">assert</span> <span class="n">b</span> <span class="o">==</span> <span class="mi">100</span>
+
+            <span class="c1"># 呼び出された順に 83, 98, 56, 81, 28 を返す</span>
+            <span class="k">return</span> <span class="nb">next</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">randints</span><span class="p">)</span>
+
+    <span class="n">random</span><span class="p">:</span> <span class="n">Any</span> <span class="o">=</span> <span class="n">MockRandom</span><span class="p">()</span>
+    <span class="n">d</span> <span class="o">=</span> <span class="n">Dice</span><span class="p">(</span><span class="n">random</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+
+    <span class="k">assert</span> <span class="n">d</span><span class="o">.</span><span class="n">max_in</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">==</span> <span class="mi">98</span>
+</pre></div>
+</div>
+<p>上記のテストでは、 <code class="docutils literal notranslate"><span class="pre">randint()</span></code> メソッドが固定値を返すような &quot;偽物の&quot; <code class="docutils literal notranslate"><span class="pre">Random</span></code> クラスである
+<code class="docutils literal notranslate"><span class="pre">MockRandom</span></code> クラスを用意してテストを行っている。</p>
+<p><code class="docutils literal notranslate"><span class="pre">MockRandom</span></code> のように、テスト時に使用される代用品は<em>テストダブル</em>と呼ばれる。テストダブルには<em>スタブ</em>や<em>モック</em>等がある（練習問題を参照）。</p>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p><a class="reference external" href="https://docs.python.org/ja/3/library/unittest.mock.html">unittest.mock 標準モジュール</a>は、モックを作るのに便利な
+<code class="docutils literal notranslate"><span class="pre">Mock</span></code> クラスや <code class="docutils literal notranslate"><span class="pre">MagicMock</span></code> クラスを提供している。</p>
+<p><code class="docutils literal notranslate"><span class="pre">Mock</span></code> クラスを使用すると先程のテストは以下のようにも書ける。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">unittest.mock</span> <span class="kn">import</span> <span class="n">Mock</span><span class="p">,</span> <span class="n">call</span>
+
+<span class="kn">from</span> <span class="nn">dice</span> <span class="kn">import</span> <span class="n">Dice</span>
+
+
+<span class="k">def</span> <span class="nf">test_max_in</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;max_in() メソッドのテスト。&quot;&quot;&quot;</span>
+
+    <span class="n">random</span> <span class="o">=</span> <span class="n">Mock</span><span class="p">()</span>
+    <span class="c1"># randint() が呼ばれた順に 83, 98, 56, 81, 28 を返すように設定</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="o">.</span><span class="n">side_effect</span> <span class="o">=</span> <span class="nb">iter</span><span class="p">([</span><span class="mi">83</span><span class="p">,</span> <span class="mi">98</span><span class="p">,</span> <span class="mi">56</span><span class="p">,</span> <span class="mi">81</span><span class="p">,</span> <span class="mi">28</span><span class="p">])</span>
+
+    <span class="n">d</span> <span class="o">=</span> <span class="n">Dice</span><span class="p">(</span><span class="n">random</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+    <span class="k">assert</span> <span class="n">d</span><span class="o">.</span><span class="n">max_in</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> <span class="o">==</span> <span class="mi">98</span>
+
+    <span class="c1"># randint(1, 100) が５回呼ばれていることを確認</span>
+    <span class="n">random</span><span class="o">.</span><span class="n">randint</span><span class="o">.</span><span class="n">assert_has_calls</span><span class="p">(</span>
+        <span class="n">call</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span> <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+    <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>乱数を用いたコードのテストでは、以下のような方法が取られることもある。</p>
+<ul class="simple">
+<li><p>単純に多くの回数試行してテストする</p></li>
+<li><p>シード値を固定してテストする（例えば <code class="docutils literal notranslate"><span class="pre">random.seed()</span></code> を利用する）</p></li>
+</ul>
+</div>
+</section>
+<section id="id4">
+<h2>練習問題<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic">
+<li><p>この章で作成した <code class="docutils literal notranslate"><span class="pre">calc_age()</span></code> 関数は、
+2 月 29 日生まれの人に対しても正しく動作するだろうか。テストを書き確かめよ。</p></li>
+<li><p>以下の <code class="docutils literal notranslate"><span class="pre">get_content_type()</span></code> 関数のテストを書け。テストしやすいように関数を変更しても構わない。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">urllib.request</span> <span class="kn">import</span> <span class="n">urlopen</span>
+
+
+<span class="k">def</span> <span class="nf">get_content_type</span><span class="p">(</span><span class="n">url</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;指定された URL にアクセスし、レスポンスの Content-Type ヘッダーの値を取得します。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        url: URL。</span>
+
+<span class="sd">    Returns:</span>
+<span class="sd">        Content-Type ヘッダーの値。設定されていなければ、空文字列。</span>
+
+<span class="sd">    Raises:</span>
+<span class="sd">        urllib.error.URLError: エラーが発生した場合に送出されます。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">with</span> <span class="n">urlopen</span><span class="p">(</span><span class="n">url</span><span class="p">)</span> <span class="k">as</span> <span class="n">f</span><span class="p">:</span>
+        <span class="n">content_type</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="n">f</span><span class="o">.</span><span class="n">headers</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s2">&quot;&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">content_type</span>
+</pre></div>
+</div>
+</li>
+<li><p>以下のような「ユーザー取得ユースケース」を作成した。</p>
+<p>TODO: サンプルリポジトリはまだ用意されていない。サンプルリポジトリが用意されたら、それに合わせて以下も書き換える予定。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="sd">&quot;&quot;&quot;ユーザー取得ユースケース。&quot;&quot;&quot;</span>
+<span class="kn">from</span> <span class="nn">dataclasses</span> <span class="kn">import</span> <span class="n">dataclass</span>
+<span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Literal</span>
+
+<span class="c1"># ここのインポートパスはパッケージ名やディレクトリ構成に応じて適宜書き換える必要があるだろう。</span>
+<span class="c1"># 以下はサンプルリポジトリの場合。</span>
+<span class="kn">from</span> <span class="nn">sample_project.domain.user</span> <span class="kn">import</span> <span class="n">UserNotFound</span> <span class="k">as</span> <span class="n">DomUserNotFound</span>
+<span class="kn">from</span> <span class="nn">sample_project.domain.user</span> <span class="kn">import</span> <span class="n">UserRepository</span>
+
+
+<span class="n">UserStatus</span> <span class="o">=</span> <span class="n">Literal</span><span class="p">[</span><span class="s2">&quot;normal&quot;</span><span class="p">,</span> <span class="s2">&quot;frozen&quot;</span><span class="p">]</span>
+<span class="sd">&quot;&quot;&quot;ユーザーのステータス。</span>
+
+<span class="sd">- `normal`: 通常。</span>
+<span class="sd">- `frozen`: 凍結状態。</span>
+<span class="sd">&quot;&quot;&quot;</span>
+
+
+<span class="k">class</span> <span class="nc">UserNotFound</span><span class="p">(</span><span class="ne">Exception</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot;ユーザーが見つかりません。&quot;&quot;&quot;</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Input</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;ユースケースの入力。</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        user_id: ユーザー ID。空でない文字列。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span>
+
+
+<span class="nd">@dataclass</span><span class="p">(</span><span class="n">frozen</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">Output</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;ユースケースの出力。</span>
+
+<span class="sd">    Attributes:</span>
+<span class="sd">        user_id: ユーザー ID。空でない文字列。</span>
+<span class="sd">        name: 名前。空でない文字列。</span>
+<span class="sd">        status: ステータス。</span>
+<span class="sd">        registered_at: 登録日時。UTC。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">user_id</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">status</span><span class="p">:</span> <span class="n">UserStatus</span>
+    <span class="n">registered_at</span><span class="p">:</span> <span class="n">datetime</span>
+
+
+<span class="k">class</span> <span class="nc">Usecase</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;ユーザー取得ユースケース。</span>
+
+<span class="sd">    ユーザー情報を取得して返します。</span>
+
+<span class="sd">    Args:</span>
+<span class="sd">        user_repository: ユーザーのリポジトリ。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">user_repository</span><span class="p">:</span> <span class="n">UserRepository</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_user_repository</span> <span class="o">=</span> <span class="n">user_repository</span>
+
+    <span class="k">def</span> <span class="nf">run</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ipt</span><span class="p">:</span> <span class="n">Input</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Output</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;ユースケースを実行します。</span>
+
+<span class="sd">        Args:</span>
+<span class="sd">            ipt: ユースケースの入力。</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">            ユースケースの出力。</span>
+
+<span class="sd">        Raises:</span>
+<span class="sd">            UserNotFound: ユーザーが見つかりません。</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">try</span><span class="p">:</span>
+            <span class="n">user</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_user_repository</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="n">ipt</span><span class="o">.</span><span class="n">user_id</span><span class="p">)</span>
+        <span class="k">except</span> <span class="n">DomUserNotFound</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="n">UserNotFound</span>
+
+        <span class="k">return</span> <span class="n">Output</span><span class="p">(</span>
+            <span class="n">user_id</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">user_id</span><span class="p">,</span>
+            <span class="n">name</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">name</span><span class="p">,</span>
+            <span class="n">status</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">status</span><span class="p">,</span>
+            <span class="n">registered_at</span><span class="o">=</span><span class="n">user</span><span class="o">.</span><span class="n">registered_at</span><span class="p">,</span>
+        <span class="p">)</span>
+</pre></div>
+</div>
+<p>このユースケースのテストを書け。</p>
+<p>また、 <code class="docutils literal notranslate"><span class="pre">run</span></code> メソッドが <code class="docutils literal notranslate"><span class="pre">User</span></code> オブジェクトを直接返さず
+<code class="docutils literal notranslate"><span class="pre">Output</span></code> クラスに「詰め替え」ていたり、わざわざ <code class="docutils literal notranslate"><span class="pre">sample_project.domain.user.UserNotFound</span></code> 例外を補足してユースケース内で定義した同名の例外を投げ直しているのはなぜだろうか。このような設計にすることのメリット・デメリットを考えよ。</p>
+</li>
+<li><p>以下のユースケースを作成し、テストを書け。</p>
+<ul class="simple">
+<li><p>ユーザー作成ユースケース</p></li>
+<li><p>ユーザー名前変更ユースケース</p></li>
+<li><p>ユーザー凍結ユースケース</p></li>
+<li><p>ユーザー凍結解除ユースケース</p></li>
+<li><p>ユーザー削除ユースケース</p></li>
+</ul>
+<p>ヒント：ユーザー削除ユースケースは<em>冪等</em>にしてもよいだろう。つまり、ユーザーが既に削除済み（見つからない）である場合は何もしない。</p>
+</li>
+<li><p>テストダブルの種類について調べよ。スタブとモックはどう使い分けられるだろうか？</p></li>
+<li><p>DI を用いたテストと、モンキーパッチを用いたテストのそれぞれについてメリット・デメリットを考察せよ。</p></li>
+<li><p>テスト駆動開発に於ける<em>ロンドン学派 (Mockist)</em> と<em>デトロイト学派 (Classicist)</em> について調べよ。この章で作成した <code class="docutils literal notranslate"><span class="pre">Dice</span></code> クラスのテストには、モックやスタブを利用すべきだろうか？</p></li>
+<li><p><em>依存性逆転の原則 (dependency inversion principle)</em> について調べよ。</p></li>
+</ol>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Python 研修</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basics.html">基本文法</a></li>
+<li class="toctree-l1"><a class="reference internal" href="class_and_object.html">クラスとオブジェクト</a></li>
+<li class="toctree-l1"><a class="reference internal" href="id_and_uuid.html">ID と UUID</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datetime.html">日時の扱い</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html">プロトコル</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dependency Injection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id1">不安定なテスト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">テストしやすいコード</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">練習問題</a></li>
+</ul>
+</li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="protocol.html" title="前の章へ">プロトコル</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/dependency_injection.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

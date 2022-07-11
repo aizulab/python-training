@@ -1,0 +1,372 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>クラスとオブジェクト &#8212; Python 研修  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="ID と UUID" href="id_and_uuid.html" />
+    <link rel="prev" title="基本文法" href="basics.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>クラスとオブジェクト<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h1>
+<section id="id2">
+<h2>オブジェクト<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<p><em>オブジェクト</em>は、簡単に言うと<em>属性</em>を持つデータである。</p>
+<p>たとえば、JavaScript にはオブジェクトリテラル記法が存在し、　<code class="docutils literal notranslate"><span class="pre">{}</span></code> でオブジェクトを作成できる。</p>
+<div class="highlight-javascript notranslate"><div class="highlight"><pre><span></span><span class="o">&gt;</span><span class="w"> </span><span class="kd">const</span><span class="w"> </span><span class="nx">obj</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="p">{}</span><span class="w"></span>
+
+<span class="o">&gt;</span><span class="w"> </span><span class="nx">obj</span><span class="w"></span>
+<span class="p">{}</span><span class="w"></span>
+
+<span class="o">&gt;</span><span class="w"> </span><span class="nx">obj</span><span class="p">.</span><span class="nx">name</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="s2">&quot;Kent Beck&quot;</span><span class="w"> </span><span class="c1">// オブジェクトに name 属性を追加</span><span class="w"></span>
+
+<span class="o">&gt;</span><span class="w"> </span><span class="nx">obj</span><span class="p">.</span><span class="nx">name</span><span class="w"> </span><span class="c1">// オブジェクトの name 属性を参照</span><span class="w"></span>
+<span class="s1">&#39;Kent Beck&#39;</span><span class="w"></span>
+
+<span class="o">&gt;</span><span class="w"> </span><span class="nx">obj</span><span class="w"></span>
+<span class="p">{</span><span class="w"> </span><span class="nx">name</span><span class="o">:</span><span class="w"> </span><span class="s1">&#39;Kent Beck&#39;</span><span class="w"> </span><span class="p">}</span><span class="w"></span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>Python では、実際には<em>ほとんどすべてがオブジェクト</em>であるが、ここでは深入りしない。例えば、int 型の数値はオブジェクトである。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+<p>それどころか、int 型それ自体もオブジェクトである。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="nb">isinstance</span><span class="p">(</span><span class="nb">int</span><span class="p">,</span> <span class="nb">object</span><span class="p">)</span>
+<span class="go">True</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="id3">
+<h2>クラス<a class="headerlink" href="#id3" title="Permalink to this heading">¶</a></h2>
+<p>Python には JavaScript のオブジェクトリテラルのようなものは存在しない。
+Python は<em>クラスベースオブジェクト指向</em>であり、通常<em>クラス</em>を利用してオブジェクトを作成する。</p>
+<p>まず、クラスを定義する。クラス名には通常アッパーキャメルケース (UpperCamelCase) を用いる。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SoftwareEngineer</span><span class="p">:</span>
+    <span class="k">pass</span>
+</pre></div>
+</div>
+<p>クラス名に <code class="docutils literal notranslate"><span class="pre">()</span></code> をつけて &quot;呼び出す&quot; と、クラスからオブジェクトが作成される。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">SoftwareEngineer</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">pass</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">se</span> <span class="o">=</span> <span class="n">SoftwareEngineer</span><span class="p">()</span>  <span class="c1"># クラスからオブジェクトを作成</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">se</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Robert C. Martin&quot;</span>  <span class="c1"># オブジェクトに name 属性を追加</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">se</span><span class="o">.</span><span class="n">name</span>  <span class="c1"># オブジェクトの name 属性を参照</span>
+<span class="go">&#39;Robert C. Martin&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">se</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Martin Fowler&quot;</span>  <span class="c1"># オブジェクトの name 属性を変更</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">se</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;Martin Fowler&#39;</span>
+</pre></div>
+</div>
+<p>クラスから作成されたオブジェクトのことを<em>インスタンス</em>ともいう。</p>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>もしインスタンスを格納する変数やインスタンスを受け取る引数に型ヒントをつけたい場合、クラス名を使用する。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="n">se</span><span class="p">:</span> <span class="n">SoftwareEngineer</span> <span class="o">=</span> <span class="n">SoftwareEngineer</span><span class="p">()</span>
+
+
+<span class="k">def</span> <span class="nf">fire</span><span class="p">(</span><span class="n">incompetent</span><span class="p">:</span> <span class="n">SoftwareEngineer</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="o">...</span>
+</pre></div>
+</div>
+</div>
+<section id="id4">
+<h3>属性に型ヒントをつける<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h3>
+<p>属性に型ヒントをつけたい場合は、以下のようにする。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SoftwareEngineer</span><span class="p">:</span>
+    <span class="n">name</span><span class="p">:</span> <span class="nb">str</span>
+</pre></div>
+</div>
+<p>後述する <code class="docutils literal notranslate"><span class="pre">__init__()</span></code> メソッドで属性を設定する場合、通常明示的に型を指定する必要はない。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">SoftwareEngineer</span><span class="p">:</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;John Doe&quot;</span>
+
+
+<span class="n">se</span> <span class="o">=</span> <span class="n">SoftwareEngineer</span><span class="p">()</span>
+<span class="n">se</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Eric Evans&quot;</span>  <span class="c1"># se は name 属性を持ち、型は str だろう...</span>
+</pre></div>
+</div>
+</section>
+</section>
+<section id="id5">
+<h2>メソッド<a class="headerlink" href="#id5" title="Permalink to this heading">¶</a></h2>
+<p><em>メソッド</em>は、クラス本体の中で定義された関数である。メソッドの第一引数は特殊な引数であり、通常 <code class="docutils literal notranslate"><span class="pre">self</span></code> という名前にする。</p>
+<p><code class="docutils literal notranslate"><span class="pre">self</span></code> 引数については後述する。ひとまず、メソッドの定義時には <code class="docutils literal notranslate"><span class="pre">self</span></code> が必要で、メソッドを呼び出すときには不要だということを覚えておこう。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Greeting</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;いろいろな挨拶をするクラスです。&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Hello! と挨拶します。&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello!&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">hi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Hi! と挨拶します。&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hi!&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">greet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phrase</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;好きなフレーズで挨拶します。&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">phrase</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p><code class="docutils literal notranslate"><span class="pre">self</span></code> 引数には通常型ヒントをつけなくてよいが、あえてつけるとしたら以下のようになる。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="c1"># 現在のところ、クラス内からのクラス名の参照には制限があり、この記述が必要</span>
+<span class="kn">from</span> <span class="nn">__future__</span> <span class="kn">import</span> <span class="n">annotations</span>
+
+
+<span class="k">class</span> <span class="nc">Greeting</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;いろいろな挨拶をするクラスです。&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="bp">self</span><span class="p">:</span> <span class="n">Greeting</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Hello! と挨拶します。&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>メソッドは通常の関数と異なり、以下のようにインスタンスの属性として呼び出す。即ち、まずクラスからインスタンスを作成し、そのインスタンスを利用してメソッドを呼び出す。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="k">class</span> <span class="nc">Greeting</span><span class="p">:</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hello!&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">hi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Hi!&quot;</span><span class="p">)</span>
+<span class="gp">... </span>    <span class="k">def</span> <span class="nf">greet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phrase</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+<span class="gp">... </span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">phrase</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+<span class="gp">...</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">greeting</span> <span class="o">=</span> <span class="n">Greeting</span><span class="p">()</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">greeting</span><span class="o">.</span><span class="n">hello</span><span class="p">()</span>
+<span class="go">Hello!</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">greeting</span><span class="o">.</span><span class="n">hi</span><span class="p">()</span>
+<span class="go">Hi!</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">greeting</span><span class="o">.</span><span class="n">greet</span><span class="p">(</span><span class="s2">&quot;irankarapte&quot;</span><span class="p">)</span>
+<span class="go">irankarapte!</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">greet()</span></code> メソッドは <code class="docutils literal notranslate"><span class="pre">self</span></code> と <code class="docutils literal notranslate"><span class="pre">phrase</span></code> の２つの引数を持っているが、メソッド呼び出し時は <code class="docutils literal notranslate"><span class="pre">self</span></code> を無視して <code class="docutils literal notranslate"><span class="pre">phrase</span></code> のみ指定していることに注意しよう。</p>
+<p>次に、インスタンスを作らずに<code class="docutils literal notranslate"><span class="pre">クラス名.メソッド名()</span></code> としても呼び出せないことを確認してみよう。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Greeting</span><span class="o">.</span><span class="n">hello</span><span class="p">()</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+<span class="gr">TypeError</span>: <span class="n">hello() missing 1 required positional argument: &#39;self&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">Greeting</span><span class="p">()</span><span class="o">.</span><span class="n">hello</span><span class="p">()</span>  <span class="c1"># これはインスタンスを作成しているので OK</span>
+<span class="go">Hello!</span>
+</pre></div>
+</div>
+<p>&quot;hello() には 'self' 引数が必要だ&quot; という不可解なエラーが発生しているが、これを理解するためにはまず <code class="docutils literal notranslate"><span class="pre">self</span></code> 引数について理解する必要がある。</p>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p><code class="docutils literal notranslate"><span class="pre">クラス名.メソッド名()</span></code> のようにして呼び出せるような特殊なメソッドも存在する。</p>
+<p>TODO: インスタンスメソッドとクラスメソッド、static method について</p>
+</div>
+</section>
+<section id="self">
+<h2>self 引数<a class="headerlink" href="#self" title="Permalink to this heading">¶</a></h2>
+<p>メソッドの第一引数には、謎の <code class="docutils literal notranslate"><span class="pre">self</span></code> を指定する決まりであった。この <code class="docutils literal notranslate"><span class="pre">self</span></code> 引数は、メソッドを呼び出したインスタンスを受け取る。</p>
+<p>実験してみよう。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Organism</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;生物を表すクラスです。</span>
+
+<span class="sd">    generic_name は属名、specific_name は種名です。</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">generic_name</span><span class="p">:</span> <span class="nb">str</span>
+    <span class="n">specific_name</span><span class="p">:</span> <span class="nb">str</span>
+
+    <span class="k">def</span> <span class="nf">binomen</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;二名法での学名を返します。&quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">generic_name</span><span class="si">}</span><span class="s2"> </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">specific_name</span><span class="si">}</span><span class="s2">&quot;</span>
+
+
+<span class="n">org</span> <span class="o">=</span> <span class="n">Organism</span><span class="p">()</span>
+<span class="n">org</span><span class="o">.</span><span class="n">generic_name</span> <span class="o">=</span> <span class="s2">&quot;Canis&quot;</span>
+<span class="n">org</span><span class="o">.</span><span class="n">specific_name</span> <span class="o">=</span> <span class="s2">&quot;lupus&quot;</span>
+
+<span class="n">binomen</span> <span class="o">=</span> <span class="n">org</span><span class="o">.</span><span class="n">binomen</span><span class="p">()</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">binomen</span><span class="p">)</span>  <span class="c1"># Canis lupus</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">org.binomen()</span></code> のようにメソッドを呼び出すと、
+<code class="docutils literal notranslate"><span class="pre">binomen()</span></code> メソッドの <code class="docutils literal notranslate"><span class="pre">self</span></code> には「このメソッドを呼び出したインスタンス」、つまり <code class="docutils literal notranslate"><span class="pre">org</span></code> が渡される。</p>
+<p>そのため、 <code class="docutils literal notranslate"><span class="pre">binomen()</span></code> メソッド内部から
+<code class="docutils literal notranslate"><span class="pre">self.generic_name</span></code> のような形でインスタンスに設定された属性にアクセスできるのである。</p>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>実は、上記の <code class="docutils literal notranslate"><span class="pre">org.binomen()</span></code> は <code class="docutils literal notranslate"><span class="pre">Organism.binomen(org)</span></code> と書くこともできる。</p>
+<p>インスタンスメソッドを<code class="docutils literal notranslate"><span class="pre">クラス名.メソッド名()</span></code> のように呼び出すときは、明示的に <code class="docutils literal notranslate"><span class="pre">self</span></code> 引数を渡さなければならない。そのため、 <code class="docutils literal notranslate"><span class="pre">Organism.binomen()</span></code> としてメソッドを呼び出そうとすると引数が足りないというエラーが出る。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">Organism</span><span class="o">.</span><span class="n">binomen</span><span class="p">()</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+<span class="gr">TypeError</span>: <span class="n">binomen() missing 1 required positional argument: &#39;self&#39;</span>
+</pre></div>
+</div>
+<p>ただし、通常インスタンスメソッドをこのように呼び出す必要はない。</p>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">self</span></code> 引数を利用すれば、メソッド内から同じクラスの別のメソッドにアクセスすることもできる。メソッドは、インスタンスの属性として呼び出すからである。</p>
+<blockquote>
+<div><div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="k">class</span> <span class="nc">Greeting</span><span class="p">:</span>
+    <span class="sd">&quot;&quot;&quot;いろいろな挨拶をするクラスです。&quot;&quot;&quot;</span>
+
+    <span class="k">def</span> <span class="nf">hello</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Hello! と挨拶します。&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">greet</span><span class="p">(</span><span class="s2">&quot;Hello&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">hi</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;Hi! と挨拶します。&quot;&quot;&quot;</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">greet</span><span class="p">(</span><span class="s2">&quot;Hi&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">greet</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">phrase</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="sd">&quot;&quot;&quot;好きなフレーズで挨拶します。&quot;&quot;&quot;</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">phrase</span><span class="si">}</span><span class="s2">!&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div></blockquote>
+</section>
+<section id="init">
+<h2>__init__ メソッド<a class="headerlink" href="#init" title="Permalink to this heading">¶</a></h2>
+<p>TODO</p>
+</section>
+<section id="id6">
+<h2>練習問題<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">user.py</span></code> というファイルを作成し、その中に <code class="docutils literal notranslate"><span class="pre">User</span></code> クラスを作成せよ。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">User</span></code> クラスに <code class="docutils literal notranslate"><span class="pre">name</span></code> 属性（文字列）を追加せよ。
+<code class="docutils literal notranslate"><span class="pre">name</span></code> 属性は、コンストラクタ経由で初期化できるようにせよ。即ち、以下が動作するようにせよ。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">user</span> <span class="o">=</span> <span class="n">User</span><span class="p">(</span><span class="s2">&quot;Ada Lovelace&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">user</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;Ada Lovelace&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">user</span><span class="o">.</span><span class="n">name</span> <span class="o">=</span> <span class="s2">&quot;Grace Hopper&quot;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">user</span><span class="o">.</span><span class="n">name</span>
+<span class="go">&#39;Grace Hopper&#39;</span>
+</pre></div>
+</div>
+</li>
+<li><p><em>プロトタイプベースオブジェクト指向</em>について調べよ。</p></li>
+<li><p>本章で登場した人名について調べよ。</p></li>
+</ol>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Python 研修</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basics.html">基本文法</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">クラスとオブジェクト</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#id2">オブジェクト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id3">クラス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id5">メソッド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#self">self 引数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#init">__init__ メソッド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">練習問題</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="id_and_uuid.html">ID と UUID</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datetime.html">日時の扱い</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html">プロトコル</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependency_injection.html">Dependency Injection</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="basics.html" title="前の章へ">基本文法</a></li>
+      <li>Next: <a href="id_and_uuid.html" title="次の章へ">ID と UUID</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/class_and_object.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

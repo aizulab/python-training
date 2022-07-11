@@ -1,0 +1,369 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>日時の扱い &#8212; Python 研修  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="プロトコル" href="protocol.html" />
+    <link rel="prev" title="ID と UUID" href="id_and_uuid.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="id1">
+<h1>日時の扱い<a class="headerlink" href="#id1" title="Permalink to this heading">¶</a></h1>
+<p>日時とは、日付 (date) と時刻 (time) のことである。</p>
+<p>Python の <a class="reference external" href="https://docs.python.org/ja/3/library/datetime.html">datetime 標準モジュール</a>では、日時を扱う便利な関数やクラス（型）が提供されている。</p>
+<section id="date">
+<h2>date 型<a class="headerlink" href="#date" title="Permalink to this heading">¶</a></h2>
+<p>日付を扱う型。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">year</span>  <span class="c1"># 年</span>
+<span class="go">2000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">month</span>  <span class="c1"># 月</span>
+<span class="go">12</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">day</span>  <span class="c1"># 日</span>
+<span class="go">31</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="o">.</span><span class="n">today</span><span class="p">()</span>  <span class="c1"># 今日の日付</span>
+<span class="go">datetime.date(2022, 5, 31)</span>
+</pre></div>
+</div>
+</section>
+<section id="time">
+<h2>time 型<a class="headerlink" href="#time" title="Permalink to this heading">¶</a></h2>
+<p>時刻を扱う型。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">time</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span> <span class="o">=</span> <span class="n">time</span><span class="p">(</span><span class="mi">23</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">999999</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">hour</span>  <span class="c1"># 時</span>
+<span class="go">23</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">minute</span>  <span class="c1"># 分</span>
+<span class="go">59</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">second</span>  <span class="c1"># 秒</span>
+<span class="go">59</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">t</span><span class="o">.</span><span class="n">microsecond</span>  <span class="c1"># マイクロ秒</span>
+<span class="go">999999</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">time</span></code> 型は、タイムゾーンを含むこともできる。タイムゾーンについては <code class="docutils literal notranslate"><span class="pre">datetime</span></code> 型で詳しく見ていく。</p>
+</section>
+<section id="id2">
+<h2>datetime 型<a class="headerlink" href="#id2" title="Permalink to this heading">¶</a></h2>
+<p>日付と時刻を扱う型。モジュール名 ( <code class="docutils literal notranslate"><span class="pre">datetime</span></code> ) と型名 ( <code class="docutils literal notranslate"><span class="pre">datetime</span></code> ) が同じなので注意。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">999999</span><span class="p">)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>  <span class="c1"># ISO 8601 形式に変換</span>
+<span class="go">&#39;2000-12-31T23:59:59.999999&#39;</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%Y 年 %m 月 </span><span class="si">%d</span><span class="s2"> 日 %H 時 %M 分 %S 秒 </span><span class="si">%f</span><span class="s2"> マイクロ秒&quot;</span><span class="p">)</span>  <span class="c1"># 好きな形式に変換</span>
+<span class="go">&#39;2000 年 12 月 31 日 23 時 59 分 59 秒 999999 マイクロ秒&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>  <span class="c1"># 現在日時</span>
+<span class="go">datetime.datetime(2022, 6, 2, 11, 47, 38, 892492)</span>
+</pre></div>
+</div>
+<p><code class="docutils literal notranslate"><span class="pre">time</span></code> 型や <code class="docutils literal notranslate"><span class="pre">datetime</span></code> 型は、タイムゾーンを含むこともできる。タイムゾーンとして UTC ( <code class="docutils literal notranslate"><span class="pre">timezone.utc</span></code> ) を指定してみよう。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>  <span class="c1"># 2000 年 1 月 1 日 0 時 0 分 0 秒 (UTC)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span>
+<span class="go">datetime.datetime(2000, 1, 1, 0, 0, tzinfo=datetime.timezone.utc)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>  <span class="c1"># ISO 8601 形式に変換</span>
+<span class="go">&#39;2000-01-01T00:00:00+00:00&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">()</span>  <span class="c1"># 現在日時（ローカル）</span>
+<span class="go">datetime.datetime(2022, 6, 2, 11, 58, 58, 289921)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span><span class="o">.</span><span class="n">now</span><span class="p">(</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>  <span class="c1"># 現在日時 (UTC)</span>
+<span class="go">datetime.datetime(2022, 6, 2, 2, 58, 58, 290334, tzinfo=datetime.timezone.utc)</span>
+</pre></div>
+</div>
+<p>協定世界時 (UTC: Coordinated Universal Time) は世界各地の標準時の基準となる時刻で、イギリスのグリニッジ標準時 (GMT) にほぼ等しい。</p>
+<p>日本標準時 (JST: Japan Standard Time) は、UTC から 9 時間進んでいる。つまり、（サマータイム中でない）イギリスが午前 0 時のとき、日本はだいたい午前 9 時である。</p>
+<p>JST は残念ながら <code class="docutils literal notranslate"><span class="pre">timezone.jst</span></code> のようには指定できないが、
+Python 3.9 以降では <a class="reference external" href="https://docs.python.org/ja/3/library/zoneinfo.html">zoneinfo 標準モジュール</a>を用いて
+IANA の Time Zone Database から <code class="docutils literal notranslate"><span class="pre">Asia/Tokyo</span></code> としてタイムゾーンを取得できる。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">zoneinfo</span> <span class="kn">import</span> <span class="n">ZoneInfo</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d_utc</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d_utc</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H 時 %M 分 (%Z)&quot;</span><span class="p">)</span>
+<span class="go">&#39;00 時 00 分 (UTC)&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d_jst</span> <span class="o">=</span> <span class="n">d_utc</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">ZoneInfo</span><span class="p">(</span><span class="s2">&quot;Asia/Tokyo&quot;</span><span class="p">))</span>  <span class="c1"># タイムゾーンを変更</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d_jst</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H 時 %M 分 (%Z)&quot;</span><span class="p">)</span>
+<span class="go">&#39;09 時 00 分 (JST)&#39;</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>Python 3.8 以前では <a class="reference external" href="https://docs.python.org/ja/3/library/zoneinfo.html">zoneinfo 標準モジュール</a>が使用できないが、
+<code class="docutils literal notranslate"><span class="pre">timezone(timedelta(hours=9),</span> <span class="pre">&quot;JST&quot;)</span></code> のように <code class="docutils literal notranslate"><span class="pre">timezone</span></code> オブジェクトを作成して使用することができる。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span><span class="p">,</span> <span class="n">timezone</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d_utc</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">tzinfo</span><span class="o">=</span><span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d_utc</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H 時 %M 分 (%Z)&quot;</span><span class="p">)</span>
+<span class="go">&#39;00 時 00 分 (UTC)&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">jst</span> <span class="o">=</span> <span class="n">timezone</span><span class="p">(</span><span class="n">timedelta</span><span class="p">(</span><span class="n">hours</span><span class="o">=</span><span class="mi">9</span><span class="p">),</span> <span class="s2">&quot;JST&quot;</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d_jst</span> <span class="o">=</span> <span class="n">d_utc</span><span class="o">.</span><span class="n">astimezone</span><span class="p">(</span><span class="n">jst</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d_jst</span><span class="o">.</span><span class="n">strftime</span><span class="p">(</span><span class="s2">&quot;%H 時 %M 分 (%Z)&quot;</span><span class="p">)</span>
+<span class="go">&#39;09 時 00 分 (JST)&#39;</span>
+</pre></div>
+</div>
+<p>また、 <a class="reference external" href="https://pypi.org/project/pytz">pytz</a> や <a class="reference external" href="https://github.com/dateutil/dateutil">dateutil</a> などタイムゾーンが扱えるサードパーティライブラリも存在する。</p>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>日時を表すオブジェクトがタイムゾーンを含むとき <em>aware</em> であるといい、タイムゾーンを含まないとき <em>naive</em> であるという。</p>
+<p>扱うタイムゾーンが明らかなときは naive な日時でも十分だが、常にタイムゾーンを指定しておくようにすると無用な混乱が防げるかもしれない。</p>
+</div>
+</section>
+<section id="timedelta">
+<h2>timedelta 型<a class="headerlink" href="#timedelta" title="Permalink to this heading">¶</a></h2>
+<p>日付や時間の差を表す型。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timedelta</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">+</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">days</span><span class="o">=</span><span class="mi">30</span><span class="p">)</span>
+<span class="go">datetime.datetime(2000, 1, 31, 0, 0)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span> <span class="o">-</span> <span class="n">timedelta</span><span class="p">(</span><span class="n">weeks</span><span class="o">=</span><span class="mi">6</span><span class="p">)</span>
+<span class="go">datetime.datetime(1999, 11, 20, 0, 0)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">)</span> <span class="o">-</span> <span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span>
+<span class="go">datetime.timedelta(days=365)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">total_seconds</span><span class="p">()</span>
+<span class="go">31536000.0</span>
+</pre></div>
+</div>
+</section>
+<section id="iso-8601">
+<h2>ISO 8601<a class="headerlink" href="#iso-8601" title="Permalink to this heading">¶</a></h2>
+<p><a class="reference external" href="https://www.iso.org/iso-8601-date-and-time-format.html">ISO 8601</a> は、日時の表記に関する
+ISO（International Organization for Standardization; 国際標準化機構）の規格である。</p>
+<p>ISO 8601 で定められている日時の表記に関する形式（以下 ISO 8601 形式と呼ぶ）は、日時を文字列で表現する場合によく用いられる。例えば JSON 文字列に日時を格納したり、日時を格納するような型を持たないデータベースに日時を格納する場合などである。</p>
+<p><code class="docutils literal notranslate"><span class="pre">date</span></code> 型、 <code class="docutils literal notranslate"><span class="pre">time</span></code> 型、 <code class="docutils literal notranslate"><span class="pre">datetime</span></code> 型は、ISO 8601 形式の文字列に変換できる。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">date</span><span class="p">,</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">time</span><span class="p">,</span> <span class="n">timezone</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">date</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+<span class="go">&#39;2000-12-31&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">time</span><span class="p">(</span><span class="mi">23</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+<span class="go">&#39;23:59:59&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">time</span><span class="p">(</span><span class="mi">23</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">999999</span><span class="p">,</span> <span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+<span class="go">&#39;23:59:59.999999+00:00&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+<span class="go">&#39;2000-12-31T23:59:59&#39;</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">31</span><span class="p">,</span> <span class="mi">23</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">999999</span><span class="p">,</span> <span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span><span class="o">.</span><span class="n">isoformat</span><span class="p">()</span>
+<span class="go">&#39;2000-12-31T23:59:59.999999+00:00&#39;</span>
+</pre></div>
+</div>
+<p>ISO 8601 形式の文字列から <code class="docutils literal notranslate"><span class="pre">date</span></code> 型、 <code class="docutils literal notranslate"><span class="pre">time</span></code> 型、 <code class="docutils literal notranslate"><span class="pre">datetime</span></code> 型への変換については、<strong>一部の形式のみ</strong>サポートされている。</p>
+<p>例えば、ISO 8601 形式では <code class="docutils literal notranslate"><span class="pre">2000-12-31T23:59:59Z</span></code> のように
+UTC を <code class="docutils literal notranslate"><span class="pre">Z</span></code> で表すことができるが、
+<code class="docutils literal notranslate"><span class="pre">time.fromisoformat()</span></code> メソッドや <code class="docutils literal notranslate"><span class="pre">datetime.fromisoformat()</span></code> メソッド等ではこの形式はサポートされていない。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="s2">&quot;2000-12-31T23:59:59+00:00&quot;</span><span class="p">)</span>
+<span class="go">datetime.datetime(2000, 12, 31, 23, 59, 59, tzinfo=datetime.timezone.utc)</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">datetime</span><span class="o">.</span><span class="n">fromisoformat</span><span class="p">(</span><span class="s2">&quot;2000-12-31T23:59:59Z&quot;</span><span class="p">)</span>
+<span class="gt">Traceback (most recent call last):</span>
+  File <span class="nb">&quot;&lt;stdin&gt;&quot;</span>, line <span class="m">1</span>, in <span class="n">&lt;module&gt;</span>
+<span class="gr">ValueError</span>: <span class="n">Invalid isoformat string: &#39;2000-12-31T23:59:59Z&#39;</span>
+</pre></div>
+</div>
+<p>詳細については、 <a class="reference external" href="https://docs.python.org/ja/3/library/datetime.html">datetime 標準モジュール</a>のドキュメントを参照されたい。</p>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p><a class="reference external" href="https://github.com/dateutil/dateutil">dateutil</a> などサードパーティのライブラリを用いると、より多くの ISO 8601 形式の文字列を読み取ることができる。</p>
+</div>
+</section>
+<section id="unix">
+<h2>UNIX 時間<a class="headerlink" href="#unix" title="Permalink to this heading">¶</a></h2>
+<p>UNIX 時間 (UNIX time, Unix time) は、UTC での 1970 年 1 月 1 日午前 0 時 0 分 0 秒からの経過秒数（但し閏秒を無視する）で日時を表したものである。</p>
+<p>UNIX 時間は POSIX 時間 (POSIX time, Posix time) やエポック秒 (Epoch time, UNIX Epoch time)
+などと呼ばれることもある。</p>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p>UNIX 時間の正確な定義や歴史についてはここでは触れない。多くの場合、上記のような定義で問題ない。</p>
+<p>また、UNIX 時間は通常秒単位だが、ミリ秒、マイクロ秒などより細かい単位まで拡張して使用されることも多い。</p>
+</div>
+<p>UNIX 時間も、ISO 8601 形式と同様に日時を表すためによく用いられる。</p>
+<p><code class="docutils literal notranslate"><span class="pre">datetime</span></code> 型は、UNIX 時間と相互変換が行えるメソッドを提供する。</p>
+<div class="highlight-python3 notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="kn">from</span> <span class="nn">datetime</span> <span class="kn">import</span> <span class="n">datetime</span><span class="p">,</span> <span class="n">timezone</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="mi">978274799</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span>
+<span class="go">datetime.datetime(2000, 12, 31, 23, 59, 59)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
+<span class="go">978274799.0</span>
+
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span> <span class="o">=</span> <span class="n">datetime</span><span class="o">.</span><span class="n">fromtimestamp</span><span class="p">(</span><span class="mf">978274799.999999</span><span class="p">,</span> <span class="n">timezone</span><span class="o">.</span><span class="n">utc</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span>
+<span class="go">datetime.datetime(2000, 12, 31, 14, 59, 59, 999999, tzinfo=datetime.timezone.utc)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">d</span><span class="o">.</span><span class="n">timestamp</span><span class="p">()</span>
+<span class="go">978274799.999999</span>
+</pre></div>
+</div>
+<div class="admonition note">
+<p class="admonition-title">注釈</p>
+<p><code class="docutils literal notranslate"><span class="pre">timestamp()</span></code> や <code class="docutils literal notranslate"><span class="pre">fromtimestamp()</span></code> メソッドの動作はプラットフォーム依存であるが、通常は殆ど問題にならない。詳細については、 <a class="reference external" href="https://docs.python.org/ja/3/library/datetime.html">datetime 標準モジュール</a>のドキュメントを参照されたい。</p>
+</div>
+</section>
+<section id="id4">
+<h2>日時や時間に関するその他の標準モジュール<a class="headerlink" href="#id4" title="Permalink to this heading">¶</a></h2>
+<ul class="simple">
+<li><p><a class="reference external" href="https://docs.python.org/ja/3/library/calendar.html">calendar 標準モジュール</a>: カレンダーに関する様々な関数群を提供するモジュール</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/ja/3/library/time.html">time 標準モジュール</a>: 時刻に関する様々な関数群を提供するモジュール</p></li>
+<li><p><a class="reference external" href="https://docs.python.org/ja/3/library/timeit.html">timeit 標準モジュール</a>: 時間を計測するためのシンプルな手段を提供するモジュール</p></li>
+</ul>
+<p><code class="docutils literal notranslate"><span class="pre">time</span></code> モジュールは <code class="docutils literal notranslate"><span class="pre">datetime</span></code> モジュールに比べてより低レベルであり、プラットフォーム提供の C ライブラリ関数を呼び出す関数などを提供する。</p>
+</section>
+<section id="id6">
+<h2>練習問題<a class="headerlink" href="#id6" title="Permalink to this heading">¶</a></h2>
+<ol class="arabic">
+<li><p><code class="docutils literal notranslate"><span class="pre">User</span></code> クラスに <code class="docutils literal notranslate"><span class="pre">registered_at</span></code> 属性（ <code class="docutils literal notranslate"><span class="pre">datetime</span></code> 型）を追加せよ。
+<code class="docutils literal notranslate"><span class="pre">registered_at</span></code> 属性は、コンストラクタ内で現在日時で初期化せよ。タイムゾーンは UTC とせよ。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">User</span></code> クラスのインスタンスを作成するたびに、 <code class="docutils literal notranslate"><span class="pre">registered_at</span></code> 属性が設定されることを確認せよ。この日時は、インスタンスを作成した日時に正しく設定されているか。</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">regist</span></code> という英単語について調べよ。</p></li>
+<li><p>アプリケーションコード内で日時を扱う場合、以下のように様々な選択肢がある。</p>
+<ul class="simple">
+<li><p>naive オブジェクトとして扱う</p></li>
+<li><p>aware オブジェクト (UTC) として扱う</p></li>
+<li><p>aware オブジェクト (JST) として扱う</p></li>
+</ul>
+<p>それぞれのメリット・デメリットを考察せよ。</p>
+</li>
+<li><p>アプリケーションコード外と日時をやりとりする場合、以下のように様々な選択肢がある。</p>
+<ul class="simple">
+<li><p>ISO 8601 形式の文字列として扱う</p></li>
+<li><p>UNIX 時間の数値として扱う</p></li>
+<li><p>データベースの日付型や時刻型など、固有のデータ型を用いる</p></li>
+</ul>
+<p>それぞれのメリット・デメリットを考察せよ。</p>
+</li>
+<li><p>2038 年問題について調べよ。</p></li>
+<li><p>閏秒について調べよ。</p></li>
+<li><p>Coordinated Universal Time の略がなぜ CUT ではなく UTC なのか調べよ。</p></li>
+</ol>
+</section>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="index.html">Python 研修</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="basics.html">基本文法</a></li>
+<li class="toctree-l1"><a class="reference internal" href="class_and_object.html">クラスとオブジェクト</a></li>
+<li class="toctree-l1"><a class="reference internal" href="id_and_uuid.html">ID と UUID</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">日時の扱い</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#date">date 型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#time">time 型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id2">datetime 型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#timedelta">timedelta 型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#iso-8601">ISO 8601</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#unix">UNIX 時間</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id4">日時や時間に関するその他の標準モジュール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id6">練習問題</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html">プロトコル</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependency_injection.html">Dependency Injection</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="index.html">Documentation overview</a><ul>
+      <li>Previous: <a href="id_and_uuid.html" title="前の章へ">ID と UUID</a></li>
+      <li>Next: <a href="protocol.html" title="次の章へ">プロトコル</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/datetime.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>

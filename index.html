@@ -1,0 +1,186 @@
+
+<!DOCTYPE html>
+
+<html lang="ja">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+    <title>Python 研修 &#8212; Python 研修  ドキュメント</title>
+    <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
+    <link rel="stylesheet" type="text/css" href="_static/alabaster.css" />
+    <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+    <script src="_static/jquery.js"></script>
+    <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+    <script src="_static/doctools.js"></script>
+    <script src="_static/translations.js"></script>
+    <link rel="index" title="索引" href="genindex.html" />
+    <link rel="search" title="検索" href="search.html" />
+    <link rel="next" title="基本文法" href="basics.html" />
+   
+  <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+  
+  
+  <meta name="viewport" content="width=device-width, initial-scale=0.9, maximum-scale=0.9" />
+
+  </head><body>
+  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          
+
+          <div class="body" role="main">
+            
+  <section id="python">
+<h1>Python 研修<a class="headerlink" href="#python" title="Permalink to this heading">¶</a></h1>
+<div class="toctree-wrapper compound">
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basics.html">基本文法</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#id2">コメント</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#id3">変数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#id4">定数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#id5">基本的な型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#list-tuple">list と tuple</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#set-dict">set と dict</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#id7">制御構文</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#id8">関数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#none">None</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#truthy-falsy">Truthy と Falsy</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#id9">型ヒントあれこれ</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#id10">例外</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#id11">表明</a></li>
+<li class="toctree-l2"><a class="reference internal" href="basics.html#id12">練習問題</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="class_and_object.html">クラスとオブジェクト</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="class_and_object.html#id2">オブジェクト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class_and_object.html#id3">クラス</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class_and_object.html#id5">メソッド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class_and_object.html#self">self 引数</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class_and_object.html#init">__init__ メソッド</a></li>
+<li class="toctree-l2"><a class="reference internal" href="class_and_object.html#id6">練習問題</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="id_and_uuid.html">ID と UUID</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="id_and_uuid.html#id">ID（識別子）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="id_and_uuid.html#id1">データベースを用いた連番生成（採番）</a></li>
+<li class="toctree-l2"><a class="reference internal" href="id_and_uuid.html#uuid">UUID</a></li>
+<li class="toctree-l2"><a class="reference internal" href="id_and_uuid.html#python-uuid">Python で UUID を生成する</a></li>
+<li class="toctree-l2"><a class="reference internal" href="id_and_uuid.html#id3">練習問題</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="datetime.html">日時の扱い</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="datetime.html#date">date 型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datetime.html#time">time 型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datetime.html#id2">datetime 型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datetime.html#timedelta">timedelta 型</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datetime.html#iso-8601">ISO 8601</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datetime.html#unix">UNIX 時間</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datetime.html#id4">日時や時間に関するその他の標準モジュール</a></li>
+<li class="toctree-l2"><a class="reference internal" href="datetime.html#id6">練習問題</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html">プロトコル</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#id2">ダック・タイピング</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#id4">ダック・タイピングと型ヒント</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#id5">プロトコル</a></li>
+<li class="toctree-l2"><a class="reference internal" href="protocol.html#id6">練習問題</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="dependency_injection.html">Dependency Injection</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="dependency_injection.html#id1">不安定なテスト</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dependency_injection.html#id2">テストしやすいコード</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dependency_injection.html#id3">Dependency Injection</a></li>
+<li class="toctree-l2"><a class="reference internal" href="dependency_injection.html#id4">練習問題</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</section>
+<section id="indices-and-tables">
+<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this heading">¶</a></h1>
+<ul class="simple">
+<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">索引</span></a></p></li>
+<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">モジュール索引</span></a></p></li>
+<li><p><a class="reference internal" href="search.html"><span class="std std-ref">検索ページ</span></a></p></li>
+</ul>
+</section>
+
+
+          </div>
+          
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+<h1 class="logo"><a href="#">Python 研修</a></h1>
+
+
+
+
+
+
+
+
+<h3>ナビゲーション</h3>
+<p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="basics.html">基本文法</a></li>
+<li class="toctree-l1"><a class="reference internal" href="class_and_object.html">クラスとオブジェクト</a></li>
+<li class="toctree-l1"><a class="reference internal" href="id_and_uuid.html">ID と UUID</a></li>
+<li class="toctree-l1"><a class="reference internal" href="datetime.html">日時の扱い</a></li>
+<li class="toctree-l1"><a class="reference internal" href="protocol.html">プロトコル</a></li>
+<li class="toctree-l1"><a class="reference internal" href="dependency_injection.html">Dependency Injection</a></li>
+</ul>
+
+<div class="relations">
+<h3>Related Topics</h3>
+<ul>
+  <li><a href="#">Documentation overview</a><ul>
+      <li>Next: <a href="basics.html" title="次の章へ">基本文法</a></li>
+  </ul></li>
+</ul>
+</div>
+<div id="searchbox" style="display: none" role="search">
+  <h3 id="searchlabel">クイック検索</h3>
+    <div class="searchformwrapper">
+    <form class="search" action="search.html" method="get">
+      <input type="text" name="q" aria-labelledby="searchlabel" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"/>
+      <input type="submit" value="検索" />
+    </form>
+    </div>
+</div>
+<script>document.getElementById('searchbox').style.display = "block"</script>
+
+
+
+
+
+
+
+
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="footer">
+      
+      
+      
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.0.2</a>
+      &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
+      
+      |
+      <a href="_sources/index.rst.txt"
+          rel="nofollow">Page source</a>
+    </div>
+
+    
+
+    
+  </body>
+</html>
