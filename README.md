@@ -1,5 +1,9 @@
 # Python 研修
 
+HTML 形式で閲覧できます: https://aizulab.github.io/python-training/
+
+## 概要
+
 [株式会社会津ラボ](https://www.aizulab.com/) において、社内研修に使用されている資料です。Python を利用して API サーバーを構築することを目標としています。
 
 講義形式で使用されることを想定しているため、独習には少し難しいかもしれません。
@@ -7,8 +11,6 @@
 ## ビルド
 
 [Sphinx](https://www.sphinx-doc.org) を利用して HTML 形式や EPUB 形式で出力できます。LaTeX 形式経由で PDF としても出力できます。
-
-今後、出力済みの形式でも公開予定です。
 
 ### 例: HTML 形式で出力
 
