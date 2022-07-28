@@ -15,8 +15,26 @@ jobs:
       - name: ビルド
         uses: ./.github/actions/build
 
-      - name: GitHub Pages で公開
-        uses: peaceiris/actions-gh-pages@v3
+      - name: ビルドした成果物 (HTML) を GitHub Pages にアップロード
+        uses: actions/upload-pages-artifact@v1
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./build/html
+          path: ./build/html
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+
+    environment:
+      name: github-pages
+      # `id: deployment` ステップの出力結果を利用
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    # 必要な権限等については https://github.com/actions/deploy-pages を参照
+    permissions:
+      pages: write
+      id-token: write
+
+    steps:
+      - name: アップロードした成果物をデプロイして公開
+        id: deployment
+        uses: actions/deploy-pages@v1
