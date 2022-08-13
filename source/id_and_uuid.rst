@@ -45,10 +45,8 @@ ID はそれぞれ区別できる、つまり比較可能でユニーク（一�
 UUID
 ====
 
-*UUID (Universally Unique IDentifier)* は RFC4122_ で定義されているユニークな ID である。
+*UUID (Universally Unique IDentifier)* は :rfc:`4122` で定義されているユニークな ID である。
 *GUID (Globally Unique IDentifier)* と呼ばれることもある。
-
-.. _RFC4122: https://datatracker.ietf.org/doc/html/rfc4122
 
 UUID は 16 進数で 32 桁（128 ビット）の値で、通常以下のようにハイフン区切りで表される。
 
